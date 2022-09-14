@@ -1,4 +1,5 @@
 from datetime import datetime
+from pytz import timezone
 import json
 import os
 
@@ -14,8 +15,8 @@ line_bot_api = LineBotApi(os.getenv('channel_access_token'))
 
 class Greeting:
     def __init__(self):
-        self.today = datetime.now().strftime('%m月%d日')
-        self.wday = datetime.now().strftime('%a')
+        self.today = datetime.now(timezone('Asia/Tokyo')).strftime('%m月%d日')
+        self.wday = datetime.now(timezone('Asia/Tokyo')).strftime('%a')
         self.message = ''
         self.quotation = ''
         self.weather = ''
