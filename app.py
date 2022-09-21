@@ -13,6 +13,7 @@ load_dotenv()
 
 line_bot_api = LineBotApi(os.getenv('channel_access_token'))
 
+
 class Greeting:
     def __init__(self):
         self.today = datetime.now(timezone('Asia/Tokyo')).strftime('%m月%d日')
@@ -157,32 +158,37 @@ class Greeting:
         print(self.today)
         print(self.wday)
         print(self.message)
-        print(quotation)
+        print(self.quotation)
 
 
-greeting = Greeting()
+def sendMessage():
+    greeting = Greeting()
 
-messages = json.load(open('config/greetings.json', 'r'))
-try:
-    messages[greeting.day()]
-    message = messages[greeting.day]
-except:
-    message = 'おはようございます'
-greeting.setMessage(message)
+    messages = json.load(open('config/greetings.json', 'r'))
+    try:
+        messages[greeting.day()]
+        message = messages[greeting.day]
+    except:
+        message = 'おはようございます'
+    greeting.setMessage(message)
 
-quotation = requests.post(
-    "https://meigen.doodlenote.net/api/json.php"
-).json()[0]
-greeting.setQuotation(quotation['meigen'], quotation['auther'])
+    quotation = requests.post(
+        "https://meigen.doodlenote.net/api/json.php"
+    ).json()[0]
+    greeting.setQuotation(quotation['meigen'], quotation['auther'])
 
-greeting.setWeather(requests.get(
-    "https://weather.tsukumijima.net/api/forecast/city/110010"
-).json()
-)
+    greeting.setWeather(requests.get(
+        "https://weather.tsukumijima.net/api/forecast/city/110010"
+    ).json()
+    )
 
-print(greeting.flex())
-line_bot_api.push_message(
-    os.getenv('groupId'),
-    FlexSendMessage(alt_text="おはようございます。",
-                    contents=json.loads(greeting.flex())),
-)
+    print(greeting.flex())
+    line_bot_api.push_message(
+        os.getenv('groupId'),
+        FlexSendMessage(alt_text="おはようございます。",
+                        contents=json.loads(greeting.flex())),
+    )
+
+
+if __name__ == '__main__':
+    sendMessage()
