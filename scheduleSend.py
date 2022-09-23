@@ -1,16 +1,26 @@
 import time
 from datetime import datetime
 
-import schedule
 from pytz import timezone
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask
 
 from app import sendMessage
 
+def a ():
+    print('a')
+
 # 7:00 == 22:00
-schedule.every().days.at("22:00").do(sendMessage)
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(sendMessage,'cron', hour=22)
+sched.start()
 
-print(datetime.now())
+app = Flask(__name__)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+@app.route("/")
+def index():
+    return {'status':'ok'}
+
+if __name__ == "__main__":
+    print(datetime.now())
+    app.run(host='0.0.0.0')
