@@ -18,12 +18,16 @@ class Greeting:
     def __init__(self):
         self.today = datetime.now(timezone('Asia/Tokyo')).strftime('%m月%d日')
         self.wday = datetime.now(timezone('Asia/Tokyo')).strftime('%a')
+        self.color = '#000000'
         self.message = ''
         self.quotation = ''
         self.weather = ''
 
     def day(self):
         return self.today
+
+    def setColor(self, color):
+      self.color = color
 
     def setMessage(self, message):
         self.message = message
@@ -64,7 +68,8 @@ class Greeting:
                 "type": "text",
                 "size": "xxl",
                 "align": "center",
-                "text": "{{today_ja}}"
+                "text": "{{today_ja}}",
+                "color": "{{color}}"
               },
               {
                 "type": "text",
@@ -149,6 +154,7 @@ class Greeting:
         ren_s = template.render(
             hello_send_message=self.message,
             today_ja=f'{self.today}({self.wday})',
+            color=self.color,
             geted_weather=self.weather,
             geted_Quotations=self.quotation,
         )
@@ -171,6 +177,14 @@ def sendMessage():
     except:
         message = 'おはようございます'
     greeting.setMessage(message)
+
+    if greeting.wday == 'Sun':
+        greeting.setColor('#FF0000')
+    elif greeting.wday == 'Sat':
+        greeting.setColor('#0000FF')
+    else:
+        greeting.setColor('#000000')
+
 
     quotation = requests.post(
         "https://meigen.doodlenote.net/api/json.php"
